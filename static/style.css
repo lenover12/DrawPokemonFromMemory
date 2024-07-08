@@ -1,0 +1,28 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* global scale factor for canvas */
+  --scale: 5;
+}
+
+#canvas {
+  border: 2px solid black;
+  /* fallback colour */
+  /* unused  */
+  /* background-color: #ffffff; */
+}
+
+/* pixel canvas */
+#canvas {
+  /* for modern browsers */
+  image-rendering: pixelated;
+  /* for browsers that are relics of the olden time */
+  image-rendering: crisp-edges;
+  /* Scaled height and width to keep image dimensions 128px*/
+  width: calc(128px * var(--scale));
+  height: calc(128px * var(--scale));
+}
