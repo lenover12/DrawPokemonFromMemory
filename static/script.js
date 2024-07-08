@@ -3,6 +3,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const ctx = canvas.getContext("2d");
   const colorInput = document.getElementById("colour");
   const saveBtn = document.getElementById("saveBtn");
+  const uploadBtn = document.getElementById("uploadBtn");
+  const pokemonNameInput = document.getElementById("pokemonName");
   const sliderRange = document.getElementById("myRange");
   const sliderValue = document.getElementById("sliderValue");
 
@@ -37,6 +39,7 @@ document.addEventListener("DOMContentLoaded", function () {
   canvas.addEventListener("mousemove", draw);
   colorInput.addEventListener("input", changeColor);
   saveBtn.addEventListener("click", saveCanvas);
+  uploadBtn.addEventListener("click", uploadCanvas);
 
   function startPosition(e) {
     painting = true;
@@ -69,10 +72,45 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function saveCanvas() {
+    let pokemonName = pokemonNameInput.value.trim();
+    if (!pokemonName) {
+      pokemonName = "pokemon_drawing";
+    }
     const dataURL = canvas.toDataURL();
     const downloadLink = document.createElement("a");
     downloadLink.href = dataURL;
-    downloadLink.download = "canvas_image.png";
+    downloadLink.download = `${pokemonName}.png`;
     downloadLink.click();
+  }
+
+  function uploadCanvas() {
+    const pokemonName = pokemonNameInput.value.trim();
+    if (!pokemonName) {
+      alert("Pokemon name is required!");
+      return;
+    }
+
+    canvas.toBlob(function (blob) {
+      const formData = new FormData();
+      formData.append("pokemonName", pokemonName);
+      formData.append("canvasImage", blob, `${new Date().toISOString()}.png`);
+
+      fetch("/upload", {
+        method: "POST",
+        body: formData,
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            alert(data.success);
+          } else {
+            alert(data.error || "Failed to upload image.");
+          }
+        })
+        .catch((error) => {
+          console.error("Error uploading image:", error);
+          alert("Failed to upload image.");
+        });
+    }, "image/png");
   }
 });
