@@ -4,7 +4,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const colorInput = document.getElementById("colour");
   const saveBtn = document.getElementById("saveBtn");
   const uploadBtn = document.getElementById("uploadBtn");
-  const pokemonNameInput = document.getElementById("pokemonName");
+  const languageSelect = document.getElementById("language");
+  const pokemonNameDisplay = document.getElementById("pokemonNameDisplay");
   const sliderRange = document.getElementById("myRange");
   const sliderValue = document.getElementById("sliderValue");
 
@@ -72,7 +73,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function saveCanvas() {
-    let pokemonName = pokemonNameInput.value.trim();
+    let pokemonName = pokemonNameDisplay.textContent.trim();
     if (!pokemonName) {
       pokemonName = "pokemon_drawing";
     }
@@ -86,8 +87,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function uploadCanvas() {
     const pokemonName = pokemonNameInput.value.trim();
     if (!pokemonName) {
-      alert("Pokemon name is required!");
-      return;
+      pokemonName = "~misingno";
     }
 
     canvas.toBlob(function (blob) {
@@ -113,4 +113,23 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }, "image/png");
   }
+
+  // Generate a random index on page load and store it in a variable
+  const randomIndex = Math.floor(Math.random() * 1026);
+
+  function loadPokemonName() {
+    const language = languageSelect.value;
+
+    fetch(`../static/lookup/${language}.json`)
+      .then((response) => response.json())
+      .then((data) => {
+        pokemonNameDisplay.textContent = data[randomIndex];
+      })
+      .catch((error) => console.error("Error loading Pokemon name:", error));
+  }
+
+  languageSelect.addEventListener("change", loadPokemonName);
+
+  // Load a random Pokemon name on page load
+  loadPokemonName();
 });
