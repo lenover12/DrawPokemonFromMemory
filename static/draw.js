@@ -31,9 +31,14 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  // Get the scale factor from CSS variable
-  const root = getComputedStyle(document.documentElement);
-  const scale = parseFloat(root.getPropertyValue("--scale"));
+  // Function to get the scale factor from CSS variable
+  function getScale() {
+    const root = getComputedStyle(document.documentElement);
+    return parseFloat(root.getPropertyValue("--scale"));
+  }
+
+  // Get the initial scale factor
+  let scale = getScale();
 
   // Timer settings
   let timerSeconds = 60; // 1 minute timer
@@ -87,11 +92,30 @@ document.addEventListener("DOMContentLoaded", function () {
   canvas.addEventListener("mousedown", startPosition);
   canvas.addEventListener("mouseup", finishedPosition);
   canvas.addEventListener("mousemove", draw);
+  canvas.addEventListener("touchstart", startPosition);
+  canvas.addEventListener("touchend", finishedPosition);
+  canvas.addEventListener("touchmove", draw);
   colorInput.addEventListener("input", changeColor);
   saveBtn.addEventListener("click", saveCanvas);
   uploadBtn.addEventListener("click", uploadCanvas);
 
+  function getEventPosition(e) {
+    const rect = canvas.getBoundingClientRect();
+    if (e.touches) {
+      return {
+        x: (e.touches[0].clientX - rect.left) / scale,
+        y: (e.touches[0].clientY - rect.top) / scale,
+      };
+    } else {
+      return {
+        x: (e.clientX - rect.left) / scale,
+        y: (e.clientY - rect.top) / scale,
+      };
+    }
+  }
+
   function startPosition(e) {
+    e.preventDefault();
     painting = true;
     draw(e);
   }
@@ -107,9 +131,7 @@ document.addEventListener("DOMContentLoaded", function () {
     ctx.lineCap = lineCap;
     ctx.strokeStyle = strokeStyle;
 
-    const rect = canvas.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / scale;
-    const y = (e.clientY - rect.top) / scale;
+    const { x, y } = getEventPosition(e);
 
     ctx.lineTo(x, y);
     ctx.stroke();
@@ -202,9 +224,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
   languageSelect.addEventListener("change", loadPokemonName);
 
-  // Load a random Pokemon name on page load
+  // Load the random Pokemon name on page load
   loadPokemonName();
 
   // Start the timer on page load
   startTimer();
+
+  // Use ResizeObserver to update scale dynamically based on screen size
+  const resizeObserver = new ResizeObserver(() => {
+    scale = getScale();
+  });
+
+  // Observe changes to the body element (or any other element you want to watch)
+  resizeObserver.observe(document.body);
 });

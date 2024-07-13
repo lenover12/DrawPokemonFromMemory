@@ -5,8 +5,32 @@
 }
 
 :root {
-  /* global scale factor for canvas */
   --scale: 5;
+  /* Default scale */
+}
+
+@media (max-width: 1200px) {
+  :root {
+    --scale: 4;
+  }
+}
+
+@media (max-width: 992px) {
+  :root {
+    --scale: 3;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --scale: 2;
+  }
+}
+
+@media (max-width: 576px) {
+  :root {
+    --scale: 1;
+  }
 }
 
 #canvas {

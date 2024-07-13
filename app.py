@@ -39,11 +39,6 @@ def handle_join_room(data):
     join_room(game_id)
     emit('joined_room', {'game_id': game_id}, room=game_id)
 
-#drawing app page
-# @app.route('/')
-# def index():
-#     return render_template('index.html')
-
 # Route for Landing page to create or join a game
 @app.route('/')
 def landing():
@@ -109,8 +104,6 @@ def start_game(game_id):
 # Draw Page
 @app.route('/draw/<game_id>')
 def draw(game_id):
-    # # Join the Socket.IO room for this game
-    # join_room(game_id)
     game = mongo.db.game.find_one({'game_id': game_id})
     if game and game['state'] == 'draw':
         return render_template('draw.html', game=game)
@@ -182,3 +175,4 @@ def review(game_id):
 
 if __name__ == '__main__':
     socketio.run(app, debug=True, host='0.0.0.0', port=25565)
+    # socketio.run(app, debug=True)
