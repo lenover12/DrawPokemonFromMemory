@@ -4,19 +4,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-  <title>Draw Pokemon From Memory - Landing</title>
+  <title>Draw Pokemon From Memory</title>
 </head>
 
 <body>
-  <h1>Welcome to Draw Pokemon From Memory!</h1>
-  <form action="/create_game" method="POST">
-    <button type="submit">Create Game</button>
-  </form>
-  <form action="/join_game" method="POST">
-    <input type="text" name="game_id" placeholder="Enter Game ID" required>
-    <button type="submit">Join Game</button>
-  </form>
+  <div class="container">
+    <h1>Draw Pokemon From Memory!</h1>
+    <div class="column-container">
+      <form action="/create_game" method="POST">
+        <input type="text" name="player_name" class="room-code" placeholder="name" maxlength="24" minlength="1">
+        <button type="submit" class="game-button">Create Room</button>
+      </form>
+      <div class="join-game">
+        <form action="/join_game" method="POST">
+          <input type="text" name="game_id" class="room-code" placeholder="Enter Game ID" required maxlength="6"
+            minlength="6">
+          <input type="text" name="player_name" class="room-code" placeholder="name" maxlength="24" minlength="1">
+          <button type="submit" class="game-button">Join Room</button>
+        </form>
+      </div>
+    </div>
+  </div>
 </body>
 
 </html>

@@ -4,20 +4,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Review - Game ID: {{ game.game_id }}</title>
+  <title>Draw Pokemon From Memory</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 
 <body>
-  <h1>Review - Game ID: {{ game.game_id }}</h1>
-  <p>Drawings:</p>
-  <ul>
-    {% for player in game.players %}
-    <li>
-      <p>Player: {{ player.session_id }}</p>
-      <img src="{{ player.image_url }}" alt="Drawing by {{ player.session_id }}">
-    </li>
-    {% endfor %}
-  </ul>
+  <div id="container">
+    <h1>Review</h1>
+    <p>Drawings of </p>
+    <p id="pokemonNameDisplay"></p>
+    <ul>
+      {% for player in game.players %}
+      <li>
+        <p>{{ player.name }}'s drawing</p>
+        <img src="{{ player.image_url }}" alt="Drawing by {{ player.name }}">
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
 </body>
 
 </html>

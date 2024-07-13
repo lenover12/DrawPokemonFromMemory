@@ -52,6 +52,10 @@ def create_game():
     # Generate a session ID for the player
     session_id = ''.join(random.choices(string.ascii_letters + string.digits, k=16)) 
     session['session_id'] = session_id
+    # Get player name
+    player_name = request.form.get('player_name')
+    if player_name == "":
+        player_name = session_id
 
     # Generate a random index
     random_index = random.randint(0, 1025)
@@ -59,7 +63,7 @@ def create_game():
     game_data = {
         'game_id': game_id,
         'state': 'lobby',
-        'players': [{'session_id': session_id, 'image_url': None}],
+        'players': [{'session_id': session_id, 'name': player_name, 'image_url': None}],
         'pokemon_id': random_index
     }
     mongo.db.game.insert_one(game_data)
@@ -75,9 +79,12 @@ def join_game():
         # Generate a session ID for the player
         session_id = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
         session['session_id'] = session_id
+        player_name = request.form.get('player_name')
+        if player_name == "":
+            player_name = session_id
         mongo.db.game.update_one(
             {'game_id': game_id},
-            {'$push': {'players': {'session_id': session_id, 'image_url': None}}}
+            {'$push': {'players': {'session_id': session_id, 'name': player_name, 'image_url': None}}}
         )
         return redirect(url_for('lobby', game_id=game_id))
     else:

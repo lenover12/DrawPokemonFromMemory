@@ -88,6 +88,9 @@ document.addEventListener("DOMContentLoaded", function () {
   let lineWidth = 2;
   let lineCap = "round";
   let strokeStyle = "#000000";
+  // Set solid white background
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   canvas.addEventListener("mousedown", startPosition);
   canvas.addEventListener("mouseup", finishedPosition);
