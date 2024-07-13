@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Review - Game ID: {{ game.game_id }}</title>
+</head>
+
+<body>
+  <h1>Review - Game ID: {{ game.game_id }}</h1>
+  <p>Drawings:</p>
+  <ul>
+    {% for player in game.players %}
+    <li>
+      <p>Player: {{ player.session_id }}</p>
+      <img src="{{ player.image_url }}" alt="Drawing by {{ player.session_id }}">
+    </li>
+    {% endfor %}
+  </ul>
+</body>
+
+</html>

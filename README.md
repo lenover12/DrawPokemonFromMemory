@@ -67,7 +67,7 @@ To get started with developing or running the game, follow these steps:
    DO_BUCKET=your_bucket_name
    DO_ACCESS_KEY=your_access_key
    DO_SECRET_KEY=your_secret_key
-   DO_ENDPOINT=spaces_region_and_endpoint (e.g. https://syd1.digitaloceanspaces.com)
+   DO_ENDPOINT=spaces_region_and_endpoint (e.g. syd1.digitaloceanspaces.com)
    ```
 
 ### Running the Application
