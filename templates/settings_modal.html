@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings Modal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <script src="{{ url_for('static', filename='translations.js') }}"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+
+<body>
+  <!-- Cog Button to Open Modal -->
+  <div class="settings-container">
+    <img src="/static/images/Dream_Scope_Lens_Sprite.png" alt="Settings" id="settingsButton" class="cog-button">
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settingsModal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="close-settings-modal">&times;</span>
+      <h2 data-lang-key="settings">Settings</h2>
+      <label for="language" data-lang-key="selectLanguage">Select Language:</label>
+      <select id="language">
+        <option value="en" data-lang-key="english">English</option>
+        <option value="de" data-lang-key="german">German</option>
+        <option value="es" data-lang-key="spanish">Spanish</option>
+        <option value="fr" data-lang-key="french">French</option>
+        <option value="ja" data-lang-key="japanese">Japanese</option>
+        <option value="ko" data-lang-key="korean">Korean</option>
+        <option value="ru" data-lang-key="russian">Russian</option>
+        <option value="th" data-lang-key="thai">Thai</option>
+        <option value="zh-hans" data-lang-key="chineseS">Chinese (Simplified)</option>
+        <option value="zh-hant" data-lang-key="chineseT">Chinese (Traditional)</option>
+      </select>
+    </div>
+  </div>
+
+  <script>
+    // Get the modal
+    var modal = document.getElementById("settingsModal");
+
+    // Get the button that opens the modal
+    var btn = document.getElementById("settingsButton");
+
+    // Get the <span> element that closes the modal
+    var span = document.getElementById("close-settings-modal");
+
+    // When the user clicks the button, open the modal 
+    btn.onclick = function () {
+      modal.style.display = "block";
+    }
+
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function () {
+      modal.style.display = "none";
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function (event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+
+    // Save language selection to localStorage
+    var languageSelect = document.getElementById("language");
+    languageSelect.onchange = function () {
+      var selectedLanguage = languageSelect.value;
+      localStorage.setItem("selectedLanguage", selectedLanguage);
+      updateLanguage(selectedLanguage);
+    }
+
+    // Load language selection from localStorage
+    function loadLanguage() {
+      var savedLanguage = localStorage.getItem("selectedLanguage");
+      if (savedLanguage) {
+        languageSelect.value = savedLanguage;
+        updateLanguage(savedLanguage);
+      }
+    }
+
+    // Update page language
+    function updateLanguage(language) {
+      // Example: Update page elements based on the selected language
+      var elements = document.querySelectorAll("[data-lang-key]");
+      elements.forEach(function (element) {
+        var key = element.getAttribute("data-lang-key");
+        if (translations[language] && translations[language][key]) {
+          element.textContent = translations[language][key];
+        } else {
+          console.warn(`Translation for key "${key}" not found for language "${language}"`);
+        }
+      });
+    }
+
+    // Load the saved language on page load
+    window.onload = loadLanguage;
+  </script>
+</body>
+
+</html>

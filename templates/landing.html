@@ -10,23 +10,229 @@
 </head>
 
 <body>
+  {% include 'settings_modal.html' %}
   <div class="container">
-    <h1>Draw Pokemon From Memory!</h1>
+    <h1 data-lang-key="dpfmTitle">Draw Pokemon From Memory!</h1>
     <div class="column-container">
-      <form action="/create_game" method="POST">
-        <input type="text" name="player_name" class="room-code" placeholder="name" maxlength="24" minlength="1">
-        <button type="submit" class="game-button">Create Room</button>
-      </form>
-      <div class="join-game">
-        <form action="/join_game" method="POST">
-          <input type="text" name="game_id" class="room-code" placeholder="Enter Game ID" required maxlength="6"
-            minlength="6">
-          <input type="text" name="player_name" class="room-code" placeholder="name" maxlength="24" minlength="1">
-          <button type="submit" class="game-button">Join Room</button>
+      <div class="row-container">
+        <div class="profile-picture-container">
+          <img id="selected-profile-picture" class="profile-picture" src="/static/images/Spr_2d_153.png"
+            alt="Profile Picture">
+        </div>
+        <input type="hidden" id="profile_picture" name="profile_picture" value="0">
+        <input type="hidden" id="profile_picture_url" name="profile_picture_url" value="/static/images/Spr_2d_153.png">
+        <div class="left-align">
+          <h2 data-lang-key="name">name:</h2>
+          <input type="text" id="player_name" class="room-code" placeholder="Ash Ketchum" maxlength="24" minlength="1"
+            required>
+        </div>
+      </div>
+      <div class="create-form">
+        <form id="create_game_form" action="/create_game" method="POST">
+          <button type="submit" class="game-button" data-lang-key="createRoom">Create Room</button>
+        </form>
+      </div>
+      <div class="join-form">
+        <form id="join_game_form" action="/join_game" method="POST">
+          <div class="row-container">
+            <div class="left-align">
+              <h2 data-lang-key="room">room:</h2>
+              <input type="text" name="game_id" class="room-code" placeholder="ABC123" required maxlength="6"
+                minlength="6">
+            </div>
+            <button type="submit" class="game-button" data-lang-key="joinRoom">Join Room</button>
+          </div>
         </form>
       </div>
     </div>
   </div>
+
+  <div id="profile-picture-modal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="close-profile-picture-modal">&times;</span>
+      <div class="grid-container">
+        <img class="grid-item" src="/static/images/Spr_2d_153.png" data-index="0">
+        <img class="grid-item" src="/static/images/Spr_2d_157.png" data-index="1">
+        <img class="grid-item" src="/static/images/Spr_2d_160.png" data-index="2">
+        <img class="grid-item" src="/static/images/Spr_2d_162.png" data-index="3">
+        <img class="grid-item" src="/static/images/Spr_2d_163.png" data-index="4">
+        <img class="grid-item" src="/static/images/Spr_2d_167.png" data-index="5">
+        <img class="grid-item" src="/static/images/Spr_2d_169.png" data-index="6">
+        <img class="grid-item" src="/static/images/Spr_2d_166.png" data-index="7">
+        <img class="grid-item" src="/static/images/Spr_2d_171.png" data-index="8">
+        <img class="grid-item" src="/static/images/Spr_2d_172.png" data-index="9">
+        <img class="grid-item" src="/static/images/Spr_2d_173.png" data-index="10">
+        <img class="grid-item" src="/static/images/Spr_2d_174.png" data-index="11">
+        <img class="grid-item" src="/static/images/Spr_2d_181.png" data-index="12">
+        <img class="grid-item" src="/static/images/Spr_2d_186.png" data-index="13">
+        <img class="grid-item" src="/static/images/Spr_2d_184.png" data-index="14">
+        <img class="grid-item" src="/static/images/Spr_2d_188.png" data-index="15">
+        <img class="grid-item" src="/static/images/Spr_2d_189.png" data-index="16">
+        <img class="grid-item" src="/static/images/Spr_2d_191.png" data-index="17">
+        <img class="grid-item" src="/static/images/Spr_2d_193.png" data-index="18">
+        <img class="grid-item" src="/static/images/Spr_2d_199.png" data-index="19">
+        <img class="grid-item" src="/static/images/Spr_2d_196.png" data-index="20">
+        <img class="grid-item" src="/static/images/Spr_2d_203.png" data-index="21">
+        <img class="grid-item" src="/static/images/Spr_2d_210.png" data-index="22">
+        <img class="grid-item" src="/static/images/Spr_2d_207.png" data-index="23">
+        <img class="grid-item" src="/static/images/Spr_2d_215.png" data-index="24">
+        <img class="grid-item" src="/static/images/Spr_2d_216.png" data-index="25">
+        <img class="grid-item" src="/static/images/Spr_2d_217.png" data-index="26">
+        <img class="grid-item" src="/static/images/Spr_2d_218.png" data-index="27">
+        <img class="grid-item" src="/static/images/Spr_2d_219.png" data-index="28">
+        <img class="grid-item" src="/static/images/Spr_2d_220.png" data-index="29">
+        <img class="grid-item" src="/static/images/Spr_2d_224.png" data-index="30">
+        <img class="grid-item" src="/static/images/Spr_2d_230.png" data-index="31">
+        <img class="grid-item" src="/static/images/Spr_2d_232.png" data-index="32">
+        <img class="grid-item" src="/static/images/Spr_2d_240.png" data-index="33">
+        <img class="grid-item" src="/static/images/Spr_2d_233.png" data-index="34">
+        <img class="grid-item" src="/static/images/Spr_2d_234.png" data-index="35">
+        <img class="grid-item" src="/static/images/Spr_2d_238.png" data-index="36">
+        <img class="grid-item" src="/static/images/Spr_2d_243.png" data-index="37">
+        <img class="grid-item" src="/static/images/Spr_2d_244.png" data-index="38">
+        <img class="grid-item" src="/static/images/Spr_2d_245.png" data-index="39">
+        <img class="grid-item" src="/static/images/Spr_2d_251.png" data-index="40">
+        <img class="grid-item" src="/static/images/Spr_2d_250.png" data-index="41">
+        <img class="grid-item" src="/static/images/Spr_2d_178.png" data-index="42">
+        <img class="grid-item" src="/static/images/Spr_2d_180.png" data-index="43">
+        <img class="grid-item" src="/static/images/Spr_2d_182.png" data-index="44">
+        <img class="grid-item" src="/static/images/Spr_2d_197.png" data-index="45">
+        <img class="grid-item" src="/static/images/Spr_2d_198.png" data-index="46">
+        <img class="grid-item" src="/static/images/Spr_2d_211.png" data-index="47">
+        <img class="grid-item" src="/static/images/Spr_2d_213.png" data-index="48">
+        <img class="grid-item" src="/static/images/Spr_2d_222.png" data-index="49">
+        <img class="grid-item" src="/static/images/Spr_2d_227.png" data-index="50">
+        <img class="grid-item" src="/static/images/Spr_2d_228.png" data-index="51">
+        <img class="grid-item" src="/static/images/Spr_2d_229.png" data-index="52">
+        <img class="grid-item" src="/static/images/Spr_2d_239.png" data-index="53">
+        <img class="grid-item" src="/static/images/Spr_2d_242.png" data-index="54">
+        <img class="grid-item" src="/static/images/Spr_2d_246.png" data-index="55">
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const modal = document.getElementById('profile-picture-modal');
+      const selectedProfilePicture = document.getElementById('selected-profile-picture');
+      const profilePictureInput = document.getElementById('profile_picture');
+      const profilePictureURLInput = document.getElementById('profile_picture_url');
+      const closeModal = document.getElementById('close-profile-picture-modal');
+      const gridItems = document.querySelectorAll('.grid-item');
+      let profilePictureUrl;
+
+      // Close modal logic
+      closeModal.onclick = function () {
+        modal.style.display = 'none';
+      };
+
+      window.onclick = function (event) {
+        if (event.target == modal) {
+          modal.style.display = 'none';
+        }
+      };
+
+      selectedProfilePicture.onclick = function () {
+        modal.style.display = 'block';
+      };
+
+      // Profile picture selection logic
+      gridItems.forEach(img => {
+        img.onclick = function () {
+          const index = this.getAttribute('data-index');
+          selectedProfilePicture.src = this.src;
+          profilePictureURLInput.value = this.src;
+          profilePictureInput.value = index;
+          modal.style.display = 'none';
+        };
+      });
+
+      // Retry logic for loading images
+      gridItems.forEach(img => {
+        img.onerror = function () {
+          let retryCount = 0;
+          const maxRetries = 3;
+          const retryLoad = () => {
+            if (retryCount < maxRetries) {
+              retryCount++;
+              this.src = this.src; // Retry loading the image
+            }
+          };
+          this.onerror = retryLoad;
+          retryLoad();
+        };
+      });
+
+      // Preload images
+      const preloadImages = () => {
+        gridItems.forEach(img => {
+          const image = new Image();
+          image.src = img.src;
+          image.onload = () => {
+            img.style.visibility = 'visible';
+          };
+          image.onerror = () => {
+            img.style.visibility = 'hidden';
+          };
+        });
+      };
+
+      preloadImages();
+
+      // Select a random profile picture
+      const randomIndex = Math.floor(Math.random() * gridItems.length);
+      const randomImage = gridItems[randomIndex];
+      selectedProfilePicture.src = randomImage.src;
+      profilePictureInput.value = randomImage.getAttribute('data-index');
+      profilePictureURLInput.value = randomImage.src;
+    });
+
+    // Handle form submissions
+    document.getElementById('create_game_form').addEventListener('submit', function (event) {
+      let playerName = document.getElementById('player_name').value.trim();
+      if (playerName === "") {
+        alert("Please enter your name.");
+        event.preventDefault();
+      } else {
+        let input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'player_name';
+        input.value = playerName;
+        this.appendChild(input);
+      }
+
+      // Add a hidden input for profile picture URL or index
+      let profilePictureURL = document.getElementById('profile_picture_url').value.trim();
+      console.log(`profile_picture_url is ${profilePictureURL}`)
+      let input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = 'profile_picture_url';
+      input.value = profilePictureURL;
+      this.appendChild(input);
+    });
+
+    document.getElementById('join_game_form').addEventListener('submit', function (event) {
+      let playerName = document.getElementById('player_name').value.trim();
+      if (playerName === "") {
+        alert("Please enter your name.");
+        event.preventDefault();
+      } else {
+        let input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'player_name';
+        input.value = playerName;
+        this.appendChild(input);
+      }
+
+      // Add a hidden input for profile picture URL or index
+      let profilePictureURL = document.getElementById('profile_picture_url').value.trim();
+      let input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = 'profile_picture_url';
+      input.value = profilePictureURL;
+      this.appendChild(input);
+    });
+  </script>
 </body>
 
 </html>

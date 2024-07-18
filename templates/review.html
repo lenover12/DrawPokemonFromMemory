@@ -10,19 +10,73 @@
 </head>
 
 <body>
+  {% include 'settings_modal.html' %}
   <div id="container">
-    <h1>Review</h1>
-    <p>Drawings of </p>
-    <p id="pokemonNameDisplay"></p>
+    <h1 data-lang-key="review">Review</h1>
     <ul>
-      {% for player in game.players %}
+      {% for round in range(1, game.round_count + 1) %}
       <li>
-        <p>{{ player.name }}'s drawing</p>
-        <img src="{{ player.image_url }}" alt="Drawing by {{ player.name }}">
+        <div class="inline-container">
+          <p data-lang-key="round">Round </p>
+          <p>{{round}}</p>
+        </div>
+        <br>
+        <div class="inline-container">
+          <p data-lang-key="drawingOf">Drawings of </p>
+          <p id="pokemonNameDisplay{{ round }}"></p>
+        </div>
+        {% for player in game.players %}
+      <li>
+        <div class="inline-container">
+          <p>{{ player.name }}'s</p>
+          <p data-lang-key="drawing"> drawing</p>
+        </div>
+        {% if player.image_urls[round - 1][round|string] %}
+        <img src="{{ player.image_urls[round - 1][round|string] }}" alt="Drawing by {{ player.name }}">
+        {% else %}
+        <p>N/A</p>
+        {% endif %}
+      </li>
+      {% endfor %}
       </li>
       {% endfor %}
     </ul>
+    <input type="hidden" id="game_id" value="{{ game.game_id }}">
+    <input type="hidden" id="round_count" value="{{ game.round_count }}">
+    <input type="hidden" id="pokemonIds" value="{{ game.pokemon_ids | tojson }}">
   </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const pokemonIdInputs = JSON.parse(document.getElementById("pokemonIds").value);
+      const round_count = parseInt(document.getElementById("round_count").value);
+
+      function loadPokemonName(round) {
+        const elementId = `pokemonNameDisplay${round}`
+        const pokemonNameDisplay = document.getElementById(elementId);
+        const language = languageSelect.value;
+
+
+        fetch(`../static/lookup/${language}.json`)
+          .then((response) => response.json())
+          .then((data) => {
+            pokemonNameDisplay.textContent = data[pokemonIdInputs[round - 1]];
+          })
+          .catch((error) => console.error("Error loading Pokemon name:", error));
+      }
+
+      languageSelect.addEventListener("change", function () {
+        for (let round = 1; round <= round_count; round++) {
+          loadPokemonName(round);
+        }
+      });
+
+      // Load the rounds Pokemon name on page load
+      for (let round = 1; round <= round_count; round++) {
+        loadPokemonName(round);
+      }
+    })
+  </script>
 </body>
 
 </html>

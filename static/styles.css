@@ -11,26 +11,380 @@
 
 @media (max-width: 1200px) {
   :root {
-    --scale: 4;
+    --scale: 4.5;
   }
 }
 
 @media (max-width: 992px) {
   :root {
-    --scale: 3;
+    --scale: 3.5;
   }
 }
 
 @media (max-width: 768px) {
   :root {
-    --scale: 2;
+    --scale: 3;
   }
 }
 
 @media (max-width: 576px) {
   :root {
-    --scale: 1;
+    --scale: 2.50;
   }
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f0f0f0;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 2vw;
+  margin: 0 auto;
+  max-width: 1200px;
+  padding-right: 10%;
+  padding-left: 10%;
+}
+
+.container {
+  text-align: center;
+  margin: 0 auto;
+  padding: 0 20px;
+  width: 100%;
+}
+
+h1 {
+  margin-bottom: 5vmin;
+  /* Scale margin relative to viewport height */
+  font-size: 4vw;
+  /* Scale font size relative to viewport width */
+  color: #333;
+}
+
+.column-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5vmin;
+  /* Scale gap relative to viewport height */
+  align-items: center;
+  padding-left: 10%;
+  padding-right: 10%;
+}
+
+/* Container to hold player profiles */
+.player-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1vw;
+  /* Adjust the gap as needed */
+  width: 100%;
+  max-width: 1200px;
+  /* Adjust the max width as needed */
+  margin: 0 auto;
+}
+
+.player-grid-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.player-grid-item img {
+  width: 10vmin;
+  /* Adjust the size as needed */
+  height: 10vmin;
+  /* Adjust the size as needed */
+  margin-bottom: 0.5vmin;
+}
+
+.player-grid-item .player-name {
+  font-size: 2vmin;
+  /* Adjust the font size as needed */
+  color: #333;
+}
+
+
+.row-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2vw;
+  /* Scale gap relative to viewport width */
+  margin-bottom: 2vw;
+  /* Scale margin relative to viewport width */
+}
+
+.profile-picture-container {
+  display: flex;
+  align-items: center;
+  margin-right: 2vw;
+  /* Scale margin relative to viewport width */
+}
+
+.profile-picture {
+  width: 10vw;
+  /* Scale width relative to viewport width */
+  height: 10vw;
+  /* Scale height relative to viewport width */
+  cursor: pointer;
+  border: 2px solid #333;
+  border-radius: 10px;
+}
+
+.game-button {
+  background: none;
+  border: none;
+  color: #FF4500;
+  font-size: 3vw;
+  /* Scale font size relative to viewport width */
+  cursor: pointer;
+  position: relative;
+  text-shadow: 2px 2px #000;
+  animation: rocking 2s infinite ease-in-out;
+  padding: 1vw;
+  /* Scale padding relative to viewport width */
+  font-family: 'Press Start 2P', cursive;
+  letter-spacing: -0.2vw;
+  /* Scale letter spacing relative to viewport width */
+}
+
+.create-form {
+  display: flex;
+  align-items: center;
+  padding-left: 40%;
+  padding-right: 40%;
+}
+
+
+.game-button::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  border: 2px solid #FF4500;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.game-button:hover {
+  background-color: #555;
+}
+
+@keyframes rocking {
+  0%, 100% {
+    transform: rotate(-3deg);
+  }
+
+  50% {
+    transform: rotate(3deg);
+  }
+}
+
+.room-code {
+  padding: 1vw;
+  /* Scale padding relative to viewport width */
+  font-size: 2.5vw;
+  /* Scale font size relative to viewport width */
+  border: 2px solid #333;
+  margin-bottom: 2vmin;
+  margin-top: 2vmin;
+  /* Scale margin relative to viewport height */
+  text-align: center;
+  border-radius: 4px;
+  color: #000000;
+  font-family: 'Press Start 2P', cursive;
+  text-transform: uppercase;
+}
+
+.large-text {
+  font-size: 4vw;
+}
+
+.player-name-list {
+  margin-top: 2vmin;
+  /* Scale margin relative to viewport height */
+  text-align: center;
+  border-radius: 4px;
+  color: #000000;
+  font-family: 'Press Start 2P', cursive;
+  text-transform: uppercase;
+}
+
+.inline-container {
+  display: inline-flex;
+}
+
+.inline-container>p {
+  margin-right: 10px;
+}
+
+.width100 {
+  width: 100%;
+}
+
+.join-game {
+  margin-top: 10vmin;
+  /* Scale margin relative to viewport height */
+}
+
+.join-form {
+  text-align: right;
+}
+
+.profile-picture-container {
+  display: flex;
+  align-items: center;
+  margin-right: 2vw;
+  /* Scale margin relative to viewport width */
+}
+
+.left-align {
+  text-align: left;
+}
+
+.row-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* TODO */
+  gap: 2vw;
+  /* Scale gap relative to viewport width */
+  margin-bottom: 2vmin;
+  /* Scale margin relative to viewport height */
+}
+
+
+
+.time-limit {
+  display: flex;
+  align-items: center;
+}
+
+.time-limit span {
+  font-size: 2vw;
+  /* Adjust font size as needed */
+  color: #FF4500;
+  /* Orange color */
+  text-shadow: 1px 1px #000;
+  /* Shadow effect */
+}
+
+.time-control {
+  font-size: 2vw;
+  /* Adjust font size as needed */
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: #FF4500;
+  /* Orange color */
+  text-shadow: 1px 1px #000;
+  /* Shadow effect */
+}
+
+.time-control:hover {
+  background-color: #555;
+}
+
+/* Styling for radio buttons */
+input[type="radio"] {
+  display: none;
+  /* Hide default radio button */
+}
+
+input[type="radio"]+label {
+  display: inline-block;
+  width: 4vw;
+  /* Adjust width as needed */
+  height: 4vw;
+  /* Adjust height as needed */
+  line-height: 4vw;
+  /* Adjust line-height as needed */
+  text-align: center;
+  background-color: black;
+  color: orange;
+  /* Orange color for selected */
+  cursor: pointer;
+  font-size: 2vw;
+  /* Adjust font size as needed */
+}
+
+input[type="radio"]:checked+label {
+  background-color: orange;
+  /* Orange background for selected */
+  color: black;
+  /* Black text for selected */
+}
+
+.profile-picture {
+  width: 10vw;
+  /* Scale width relative to viewport width */
+  height: 10vw;
+  /* Scale height relative to viewport width */
+  cursor: pointer;
+  border: 2px solid #333;
+  border-radius: 10px;
+}
+
+.profile-picture-small {
+  width: 5vw;
+  height: 5vw;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 2vmin;
+  /* Scale padding relative to viewport height */
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 1200px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 3vmin;
+  /* Scale font size relative to viewport height */
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 2vw;
+  /* Scale gap relative to viewport width */
+}
+
+.grid-item {
+  width: 100%;
+  height: auto;
+  cursor: pointer;
 }
 
 #canvas {
@@ -51,36 +405,18 @@
   height: calc(128px * var(--scale));
 }
 
-/* unused */
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-  }
-
-  50% {
-    transform: scale(1.2);
-  }
-
-  100% {
-    transform: scale(1);
-  }
-}
-
-/* unused */
-#pulse {
-  animation: pulse 2s infinite alternate;
-}
-
 .slider-container {
   width: 80%;
-  margin: 20px auto;
+  margin: 5vmin auto;
+  /* Scale margin relative to viewport height */
   text-align: center;
 }
 
 .slider {
   -webkit-appearance: none;
   width: 100%;
-  height: 10px;
+  height: 1vmin;
+  /* Scale height relative to viewport height */
   background: #ddd;
   outline: none;
   opacity: 0.7;
@@ -94,107 +430,35 @@
 .slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 20px;
-  height: 20px;
-  background: #4caf50;
+  width: 2vw;
+  /* Scale width relative to viewport width */
+  height: 2vmin;
+  /* Scale height relative to viewport height */
+  /* background: #4caf50; */
+  background: url('https://archives.bulbagarden.net/media/upload/7/79/Dream_Pok%C3%A9_Ball_Sprite.png') no-repeat;
+  background-size: cover;
   cursor: pointer;
 }
 
 .slider::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
-  background: #4caf50;
+  width: 2vw;
+  /* Scale width relative to viewport width */
+  height: 2vmin;
+  /* Scale height relative to viewport height */
+  /* background: #4caf50; */
+  background: url('https://archives.bulbagarden.net/media/upload/7/79/Dream_Pok%C3%A9_Ball_Sprite.png') no-repeat;
+  background-size: cover;
   cursor: pointer;
 }
 
-body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: #f0f0f0;
-  font-family: 'Press Start 2P', cursive;
-  margin: 20px;
+.settings-container {
+  position: fixed;
+  top: 10px;
+  right: 10px;
 }
 
-.container {
-  text-align: center;
-}
-
-h1 {
-  margin-bottom: 60px;
-  font-size: 2em;
-  color: #333;
-}
-
-.column-container {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.game-button {
-  background: none;
-  border: none;
-  color: #FF4500;
-  font-size: 1.8em;
-  /* font-size: 36px; */
+.cog-button {
+  width: 40px;
+  height: 40px;
   cursor: pointer;
-  position: relative;
-  text-shadow: 2px 2px #000;
-  animation: rocking 2s infinite ease-in-out;
-  padding: 5px;
-  font-family: 'Press Start 2P', cursive;
-  letter-spacing: -2px;
-}
-
-.game-button::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 100%;
-  height: 100%;
-  /* this is not just after */
-  border: 2px solid #FF4500;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-}
-
-@keyframes rocking {
-  0%, 100% {
-    transform: rotate(-3deg);
-  }
-
-  50% {
-    transform: rotate(3deg);
-  }
-}
-
-.room-code {
-  width: 80%;
-  padding: 10px;
-  font-size: 1.6em;
-  border: 2px solid #333;
-  margin-bottom: 20px;
-  text-align: center;
-  border-radius: 4px;
-  color: #000000;
-  font-family: 'Press Start 2P', cursive;
-  text-transform: uppercase;
-}
-
-.join-game {
-  margin-top: 80px;
-}
-
-/* Responsive design for buttons */
-@media (max-width: 768px) {
-  .game-button {
-    font-size: 24px;
-  }
-
-  input[type="text"] {
-    font-size: 14px;
-  }
 }

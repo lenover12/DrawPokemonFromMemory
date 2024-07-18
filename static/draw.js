@@ -10,7 +10,10 @@ document.addEventListener("DOMContentLoaded", function () {
   const sliderValue = document.getElementById("sliderValue");
   const pokemonIdInput = document.getElementById("pokemonId");
   const gameIDInput = document.getElementById("game_id");
+  const timerMax = document.getElementById("max_time");
   const timerDisplay = document.getElementById("timer");
+  const playerName = document.getElementById("player_name");
+  const roundNumber = document.getElementById("round_number");
 
   // Initialize Socket.IO client
   const socket = io();
@@ -31,6 +34,13 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
+  // Listen for redirect event to review page
+  socket.on("redirect_to_draw", function (data) {
+    if (data.game_id === game_id) {
+      window.location.href = `/draw/${game_id}`;
+    }
+  });
+
   // Function to get the scale factor from CSS variable
   function getScale() {
     const root = getComputedStyle(document.documentElement);
@@ -41,11 +51,15 @@ document.addEventListener("DOMContentLoaded", function () {
   let scale = getScale();
 
   // Timer settings
-  let timerSeconds = 60; // 1 minute timer
+  let timerSeconds = parseInt(timerMax.value.trim(), 10);
+  console.log(timerSeconds);
   let timerInterval;
 
   // Start timer function
   function startTimer() {
+    // Get initial time from timerDisplay and parse it as an integer
+    console.log(timerSeconds);
+
     timerInterval = setInterval(() => {
       timerSeconds--;
       if (timerSeconds < 0) {
@@ -66,7 +80,6 @@ document.addEventListener("DOMContentLoaded", function () {
       seconds < 10 ? "0" : ""
     }${seconds}`;
   }
-
   // Display the default slider value
   sliderValue.textContent = sliderRange.value;
 
@@ -149,7 +162,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function saveCanvas() {
     let pokemonName = pokemonNameDisplay.textContent.trim();
     if (!pokemonName) {
-      pokemonName = "pokemon_drawing";
+      pokemonName = "~missingno";
     }
     const dataURL = canvas.toDataURL();
     const downloadLink = document.createElement("a");
@@ -172,62 +185,84 @@ document.addEventListener("DOMContentLoaded", function () {
       formData.append("pokemonName", pokemonName);
       formData.append("canvasImage", blob, `${new Date().toISOString()}.png`);
       formData.append("game_id", game_id);
+      formData.append("player_name", playerName.value);
+      formData.append("round_number", roundNumber.value);
 
       fetch("/upload", {
         method: "POST",
         body: formData,
       })
-        .then((response) => response.json())
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
         .then((data) => {
           if (data.success) {
             // alert(data.success);
             // Disable the uploadBtn button
             uploadBtn.disabled = true;
 
-            // Check if all players have uploaded their images
-            fetch(`/get_players/${game_id}`)
-              .then((response) => response.json())
-              .then((data) => {
-                const players = data.players;
-                const allUploaded = players.every(
-                  (player) => player.image_url !== null
-                );
+            // CHECK ALL UPLOADED HAPPENS ON THE SERVER ANYWAY
+            // // Check if all players have uploaded their images
+            // fetch(`/get_players/${game_id}`)
+            //   .then((response) => response.json())
+            //   .then((data) => {
+            //     const players = data.players;
+            //     const allUploaded = players.every(
+            //       (player) => player.image_url !== null
+            //     );
 
-                if (allUploaded) {
-                  window.location.href = `/review/${game_id}`;
-                }
-              })
-              .catch((error) =>
-                console.error("Error checking players:", error)
-              );
+            //     if (allUploaded) {
+            //       window.location.href = `/review/${game_id}`;
+            //     }
+            //   })
+            //   .catch((error) =>
+            //     console.error("Error checking players:", error)
+            //   );
           } else {
+            console.error("I DONT KNOW", error);
             alert(data.error || "Failed to upload image.");
           }
         })
         .catch((error) => {
           console.error("Error uploading image:", error);
-          alert("Failed to upload image.");
+          alert("Failed to upload image. please check your network connection");
         });
     }, "image/png");
   }
 
   // Get pokemon_id from hidden input field
-  const pokemonId = pokemonIdInput.value;
+  // const pokemonId = pokemonIdInput.value;
+  const pokemonId = parseInt(pokemonIdInput.value.trim(), 10);
 
   function loadPokemonName() {
     const language = languageSelect.value;
 
+    console.log(`pokemon id before lookup table is ${pokemonId}`);
+
     fetch(`../static/lookup/${language}.json`)
       .then((response) => response.json())
       .then((data) => {
-        pokemonNameDisplay.textContent = data[pokemonId];
+        // Ensure pokemonId is within array bounds
+        if (pokemonId > 0 && pokemonId <= data.length) {
+          pokemonNameDisplay.textContent = data[pokemonId - 1];
+          console.log(
+            `pokemon after pokemonNameDisplay.textContent updated is ${
+              data[pokemonId - 1]
+            }`
+          );
+        } else {
+          console.error(`Pokemon ID ${pokemonId} is out of bounds.`);
+        }
       })
       .catch((error) => console.error("Error loading Pokemon name:", error));
   }
 
   languageSelect.addEventListener("change", loadPokemonName);
 
-  // Load the random Pokemon name on page load
+  // Load the rounds Pokemon name on page load
   loadPokemonName();
 
   // Start the timer on page load

@@ -7,44 +7,47 @@
   <title>Draw Pokemon From Memory</title>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-  <script src="/socket.io/socket.io.js"></script>
   <script src="{{ url_for('static', filename='draw.js') }}" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.3/socket.io.js"></script>
 </head>
 
 <body>
+  {% include 'settings_modal.html' %}
   <div id="container">
     <div id="column-container">
-      <p>Draw the Pokemon displayed below:</p>
-      <p id="pokemonNameDisplay"></p>
-      <label for="language">Select Language:</label>
-      <select id="language">
-        <option value="en">English</option>
-        <option value="de">German</option>
-        <option value="es">Spanish</option>
-        <option value="fr">French</option>
-        <option value="ja">Japanese</option>
-        <option value="ko">Korean</option>
-        <option value="ru">Russian</option>
-        <option value="th">Thai</option>
-        <option value="zh-hans">Chinese (Simplified)</option>
-        <option value="zh-hant">Chinese (Traditional)</option>
-      </select>
+      <div class="inline-container">
+        <p data-lang-key="drawText">Draw the pokemon: </p>
+        <p id="pokemonNameDisplay"></p>
+      </div>
     </div>
-    <canvas id="canvas" width="128" height="128" style="border:1px solid #000000;"></canvas>
+    <canvas id="canvas" width="128" height="128" style="border:1px solid #000000;"
+      ontouchstart="event.stopPropagation()" ontouchmove="event.stopPropagation()"></canvas>
     <div>
-      <label for="colour">color:</label>
+      <label for="colour" data-lang-key="colour">colour:</label>
       <input type="color" id="colour" name="colour" value="#000000">
     </div>
     <div class="slider-container">
-      <label for="myRange">Line Width: <span id="sliderValue"></span></label>
-      <input type="range" id="myRange" min="1" max="50" value="2" class="slider">
+      <label for="myRange" data-lang-key="lineWidth">Line Width: </label>
+      <span id="sliderValue"></span>
+      <input type="range" id="myRange" min="1" max="50" value="2" class="slider" ontouchstart="event.stopPropagation()"
+        ontouchmove="event.stopPropagation()">
     </div>
-    <p>Time left: <span id="timer">0</span></p>
-    <button id="saveBtn" class="game-button">Save</button>
-    <button id="uploadBtn" class="game-button">Upload</button>
+    <div class="inline-container">
+      <p data-lang-key="timeLeft">Time left: </p><span id="timer">0</span>
+    </div>
+    <br>
+    <button id="saveBtn" class="game-button" data-lang-key="save">Save</button>
+    <button id="uploadBtn" class="game-button" data-lang-key="upload">Upload</button>
     <input type="hidden" id="game_id" value="{{ game.game_id }}">
-    <input type="hidden" id="pokemonId" value="{{ game.pokemon_id }}">
+    <input type="hidden" id="pokemonId" value="{{ game.pokemon_ids[(game.current_round - 1)] }}
+    ">
+    <input type="hidden" id="max_time" value="{{ game.time_limit }}">
+    {% for player in game.players %}
+    {% if session['session_id'] == player.session_id %}
+    <input type="hidden" id="player_name" value="{{ player.name }}">
+    {% endif %}
+    {% endfor %}
+    <input type="hidden" id="round_number" value="{{ game.current_round }}">
   </div>
 </body>
 

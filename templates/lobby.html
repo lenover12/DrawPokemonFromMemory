@@ -10,19 +10,54 @@
 </head>
 
 <body>
+  {% include 'settings_modal.html' %}
   <div class="container">
-    <h1>Game ID: {{ game.game_id }}</h1>
-    <div class="column-container">
-      <p>Players:</p>
-      <ul id="playerList">
-        {% for player in game.players %}
-        <li>{{ player.name }}</li>
+    <h1 data-lang-key="gameId">Game ID: </h1>
+    <h1 class="room-code"> {{ game.game_id }}</h1>
+    <p data-lang-key="players">Players:</p>
+    <!-- <ul id="playerList"> -->
+    <div class="player-grid">
+      {% for player in game.players %}
+      <div class="player-grid-item">
+        <div class="profile-picture-container">
+          <img id="player-{{ loop.index }}" class="profile-picture-small" src="{{ player.profile_picture }}"
+            alt="Profile Picture">
+          <p class="player-name-list">{{ player.name }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <!-- </ul> -->
+    {% if session['session_id'] == game.players[0].session_id %}
+
+    <!-- Radio buttons for number of rounds -->
+    <form action="/start_game/{{ game.game_id }}" method="POST">
+      <div class="row-container">
+        <span class="left-align" data-lang-key="rounds">Rounds:</span>
+        {% for i in range(1, 6) %}
+        <input type="radio" id="round{{ i }}" name="round_count" value="{{ i }}" {% if i==1 %} checked {% endif %}>
+        <label for="round{{ i }}">{{ i }}</label>
         {% endfor %}
-      </ul>
-      <form action="/start_game/{{ game.game_id }}" method="POST">
-        <button type="submit" class="game-button">Start Game</button>
-      </form>
-      <!-- <script>
+      </div>
+
+      <!-- Time limit selector -->
+      <div class="row-container">
+        <span class="left-align" data-lang-key="timeLimit">Time Limit:</span>
+        <div class="time-limit">
+          <span id="time-display">2:30</span>
+          <button type="button" class="time-control" onclick="decreaseTime()">▼</button>
+          <button type="button" class="time-control" onclick="increaseTime()">▲</button>
+          <input type="hidden" id="timer" name="timer" value="150">
+        </div>
+      </div>
+
+      <button type="submit" class="game-button" data-lang-key="startGame">Start Game</button>
+    </form>
+
+    {% else %}
+    <p data-lang-key="waitingForHost">waiting for host to start game</p>
+    {% endif %}
+    <!-- <script>
       // Periodic update to get the list of players
       setInterval(function () {
         fetch(`/get_players/{{ game.game_id }}`)
@@ -40,8 +75,79 @@
           });
       }, 5000);  // Update every 5 seconds
     </script> -->
-    </div>
+
+
   </div>
+
+  <script>
+    // JavaScript functions to handle time limit adjustments
+    function increaseTime() {
+      const timeDisplay = document.getElementById('time-display');
+      const currentTime = parseTime(timeDisplay.textContent);
+      const newTime = addTime(currentTime, 30);
+      if (isValidTime(newTime)) {
+        timeDisplay.textContent = formatTime(newTime);
+        updateTimerInput(newTime);
+      }
+    }
+
+    function decreaseTime() {
+      const timeDisplay = document.getElementById('time-display');
+      const currentTime = parseTime(timeDisplay.textContent);
+      const newTime = subtractTime(currentTime, 30);
+      if (isValidTime(newTime)) {
+        timeDisplay.textContent = formatTime(newTime);
+        updateTimerInput(newTime);
+      }
+    }
+
+    function updateTimerInput(time) {
+      const timerInput = document.getElementById('timer');
+      const totalSeconds = time.minutes * 60 + time.seconds;
+      timerInput.value = totalSeconds;
+    }
+
+    function isValidTime(time) {
+      const totalSeconds = time.minutes * 60 + time.seconds;
+      return totalSeconds >= 30 && totalSeconds <= 720; // 30 seconds to 12 minutes (720 seconds)
+    }
+
+    function parseTime(timeString) {
+      const [minutes, seconds] = timeString.split(':').map(Number);
+      return { minutes, seconds };
+    }
+
+    function addTime(time, secondsToAdd) {
+      let totalSeconds = time.minutes * 60 + time.seconds + secondsToAdd;
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      return { minutes, seconds };
+    }
+
+    function subtractTime(time, secondsToSubtract) {
+      let totalSeconds = time.minutes * 60 + time.seconds - secondsToSubtract;
+      if (totalSeconds < 0) {
+        totalSeconds = 0;
+      }
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      return { minutes, seconds };
+    }
+
+    function formatTime(time) {
+      const paddedSeconds = time.seconds.toString().padStart(2, '0');
+      return `${time.minutes}:${paddedSeconds}`;
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const images = document.querySelectorAll('.profile-picture-small');
+      images.forEach(img => {
+        img.onerror = function () {
+          this.style.visibility = 'hidden';
+        };
+      });
+    });
+  </script>
 </body>
 
 </html>
