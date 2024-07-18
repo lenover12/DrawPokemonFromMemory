@@ -22,10 +22,10 @@ document.addEventListener("DOMContentLoaded", function () {
   const game_id = document.getElementById("game_id").value;
   socket.emit("join_room", { game_id });
 
-  // Listen for room join confirmation
-  socket.on("joined_room", function (data) {
-    console.log(`Joined room: ${data.game_id}`);
-  });
+  // // Listen for room join confirmation
+  // socket.on("joined_room", function (data) {
+  //   console.log(`Joined room: ${data.game_id}`);
+  // });
 
   // Listen for redirect event to review page
   socket.on("redirect_to_review", function (data) {
@@ -34,8 +34,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  // Listen for redirect event to review page
-  socket.on("redirect_to_draw", function (data) {
+  // Listen for redirect event to draw page
+  socket.on("redirect_to_next_round", function (data) {
     if (data.game_id === game_id) {
       window.location.href = `/draw/${game_id}`;
     }
@@ -52,14 +52,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Timer settings
   let timerSeconds = parseInt(timerMax.value.trim(), 10);
-  console.log(timerSeconds);
   let timerInterval;
 
   // Start timer function
   function startTimer() {
-    // Get initial time from timerDisplay and parse it as an integer
-    console.log(timerSeconds);
-
     timerInterval = setInterval(() => {
       timerSeconds--;
       if (timerSeconds < 0) {
@@ -200,27 +196,8 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .then((data) => {
           if (data.success) {
-            // alert(data.success);
             // Disable the uploadBtn button
             uploadBtn.disabled = true;
-
-            // CHECK ALL UPLOADED HAPPENS ON THE SERVER ANYWAY
-            // // Check if all players have uploaded their images
-            // fetch(`/get_players/${game_id}`)
-            //   .then((response) => response.json())
-            //   .then((data) => {
-            //     const players = data.players;
-            //     const allUploaded = players.every(
-            //       (player) => player.image_url !== null
-            //     );
-
-            //     if (allUploaded) {
-            //       window.location.href = `/review/${game_id}`;
-            //     }
-            //   })
-            //   .catch((error) =>
-            //     console.error("Error checking players:", error)
-            //   );
           } else {
             console.error("I DONT KNOW", error);
             alert(data.error || "Failed to upload image.");
@@ -240,19 +217,12 @@ document.addEventListener("DOMContentLoaded", function () {
   function loadPokemonName() {
     const language = languageSelect.value;
 
-    console.log(`pokemon id before lookup table is ${pokemonId}`);
-
     fetch(`../static/lookup/${language}.json`)
       .then((response) => response.json())
       .then((data) => {
         // Ensure pokemonId is within array bounds
-        if (pokemonId > 0 && pokemonId <= data.length) {
-          pokemonNameDisplay.textContent = data[pokemonId - 1];
-          console.log(
-            `pokemon after pokemonNameDisplay.textContent updated is ${
-              data[pokemonId - 1]
-            }`
-          );
+        if (pokemonId >= 0 && pokemonId < data.length) {
+          pokemonNameDisplay.textContent = data[pokemonId];
         } else {
           console.error(`Pokemon ID ${pokemonId} is out of bounds.`);
         }

@@ -7,6 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
   <title>Draw Pokemon From Memory</title>
+  <script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
 </head>
 
 <body>
@@ -15,7 +16,6 @@
     <h1 data-lang-key="gameId">Game ID: </h1>
     <h1 class="room-code"> {{ game.game_id }}</h1>
     <p data-lang-key="players">Players:</p>
-    <!-- <ul id="playerList"> -->
     <div class="player-grid">
       {% for player in game.players %}
       <div class="player-grid-item">
@@ -27,7 +27,6 @@
       </div>
       {% endfor %}
     </div>
-    <!-- </ul> -->
     {% if session['session_id'] == game.players[0].session_id %}
 
     <!-- Radio buttons for number of rounds -->
@@ -57,29 +56,74 @@
     {% else %}
     <p data-lang-key="waitingForHost">waiting for host to start game</p>
     {% endif %}
-    <!-- <script>
-      // Periodic update to get the list of players
-      setInterval(function () {
+
+    <input type="hidden" id="game_id" value="{{ game.game_id }}">
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Initialize Socket.IO and connect to your server
+      const socket = io();
+
+      const game_id = document.getElementById("game_id").value;
+
+      // Join the game room
+      socket.emit("join_room", { game_id });
+
+      // Listen for room join confirmation
+      socket.on("joined_room", function (data) {
+        // Update player list
         fetch(`/get_players/{{ game.game_id }}`)
           .then(response => response.json())
           .then(data => {
             if (data.players) {
-              const playerList = document.getElementById('playerList');
-              playerList.innerHTML = '';
-              data.players.forEach(player => {
-                const li = document.createElement('li');
-                li.textContent = player.name;
-                playerList.appendChild(li);
+              const playerGrid = document.querySelector('.player-grid');
+              playerGrid.innerHTML = ''; // Clear the current contents
+
+              data.players.forEach((player, index) => {
+                // Create the profile picture container div
+                const profilePictureContainer = document.createElement('div');
+                profilePictureContainer.className = 'profile-picture-container';
+
+                // Create the img element
+                const img = document.createElement('img');
+                img.id = `player-${index + 1}`;
+                img.className = 'profile-picture-small';
+                img.src = player.profile_picture;
+                img.alt = 'Profile Picture';
+
+                // Create the p element for the player name
+                const playerName = document.createElement('p');
+                playerName.className = 'player-name-list';
+                playerName.textContent = player.name;
+
+                // Append img and p elements to the profile picture container div
+                profilePictureContainer.appendChild(img);
+                profilePictureContainer.appendChild(playerName);
+
+                // Create the player grid item div
+                const playerGridItem = document.createElement('div');
+                playerGridItem.className = 'player-grid-item';
+
+                // Append the profile picture container to the player grid item
+                playerGridItem.appendChild(profilePictureContainer);
+
+                // Append the player grid item to the player grid
+                playerGrid.appendChild(playerGridItem);
               });
             }
           });
-      }, 5000);  // Update every 5 seconds
-    </script> -->
+      });
 
+      // Listen for redirect event to review page
+      socket.on("redirect_to_draw", function (data) {
+        if (data.game_id === game_id) {
+          window.location.href = `/draw/${game_id}`;
+        }
+      });
 
-  </div>
+    });
 
-  <script>
     // JavaScript functions to handle time limit adjustments
     function increaseTime() {
       const timeDisplay = document.getElementById('time-display');

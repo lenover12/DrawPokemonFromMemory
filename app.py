@@ -35,7 +35,6 @@ socketio = SocketIO(app, async_mode='eventlet', logger=True, engineio_logger=Tru
 @socketio.on('join_room')
 def handle_join_room(data):
     game_id = data['game_id']
-    print('backend user is joined room:', game_id)
     join_room(game_id)
     emit('joined_room', {'game_id': game_id}, room=game_id)
 
@@ -57,8 +56,6 @@ def create_game():
     if player_name == "":
         player_name = session_id
     player_profile_picture = request.form.get('profile_picture_url')
-    # print(f"MY PROFILE PICTURE URL IS {player_profile_picture}")
-    # print(request.form)
 
     game_data = {
         'game_id': game_id,
@@ -82,7 +79,6 @@ def join_game():
         if player_name == "":
             player_name = session_id
         player_profile_picture = request.form.get('profile_picture_url')
-        print(f"MY PROFILE PICTURE URL IS {player_profile_picture}")
     
         mongo.db.game.update_one(
             {'game_id': game_id},
@@ -121,7 +117,7 @@ def start_game(game_id):
             'pokemon_ids': pokemon_ids
         }}
     )
-
+    socketio.emit('redirect_to_draw', {'game_id': game_id}, room=game_id)
     return redirect(url_for('draw', game_id=game_id))
 
 # Draw Page
@@ -146,65 +142,32 @@ def get_players(game_id):
 def upload():
     pokemon_name = request.form['pokemonName'].strip()
     if not pokemon_name:
-        print("err: pokemon doesnt have a name")
         pokemon_name = "~missingno"
-    print(f"pokemon name: {pokemon_name}")
 
     player_name = request.form['player_name'].strip()
     if not player_name:
-        print("err: player doesnt have a name")
         player_name = "~missingno"
-    print(f"player name: {player_name}")
 
     file = request.files['canvasImage']
     timestamp = int(time.time())
-    print(f"timestamp: {timestamp}")
     filename = f"{player_name}_{timestamp}.png"
 
+    # Get variables
+    session_id = session.get('session_id')
+    game_id = request.form.get('game_id')
+
+    game = mongo.db.game.find_one({'game_id': game_id})
+
+    # Check if each player has an image URL for the specific round key
+    currentRound = game['current_round']
+
+    pokemon_id = game['pokemon_ids'][currentRound - 1] + 1
+    print (f"\n\n\n\nPOKEMON ID IS:::: {pokemon_id}")
+
     try:
-        s3.upload_fileobj(file, os.getenv("DO_BUCKET"), f"{pokemon_name}/{filename}", ExtraArgs={'ACL': 'public-read'})
-        image_url = f"https://{os.getenv('DO_BUCKET')}.{os.getenv('DO_ENDPOINT')}/{pokemon_name}/{filename}"
-        # print(image_url)
+        s3.upload_fileobj(file, os.getenv("DO_BUCKET"), f"{pokemon_id}/{filename}", ExtraArgs={'ACL': 'public-read'})
+        image_url = f"https://{os.getenv('DO_BUCKET')}.{os.getenv('DO_ENDPOINT')}/{pokemon_id}/{filename}"
 
-        # Get variables
-        session_id = session.get('session_id')
-        game_id = request.form.get('game_id')
-        print(f"session id: {session_id}")
-        print(f"game id: {game_id}")
-
-
-        game = mongo.db.game.find_one({'game_id': game_id})
-        # all_uploaded = all(player.get('image_url') for player in game.get('players', []))
-        # Check if each player has an image URL for the specific round key
-        #WHAT THE FUCK
-        currentRound = game['current_round']
-        print(f"currnet round: {currentRound}")
-
-
-        # Construct the field to update using the index
-        image_url_key = f'players.$.image_urls.[{currentRound}]'
-        print(f"image url key: {image_url_key}")
-
-        # # Update the player's image URL in the database
-        # mongo.db.game.update_one(
-        #     {'game_id': game_id, 'players.session_id': session_id},
-        #     {'$set': {image_url_key: image_url}}
-        # )
-
-        #TEST
-        # Update the player's image URL in the database
-        #TODO: if there is already an object with the key of this round then replace it
-
-        # mongo.db.game.update_one(
-        #     {'game_id': game_id, 'players.session_id': session_id},
-        #     {'$push': {'players.$.image_urls': {str(currentRound): image_url}}}
-        # )
-
-        # Update the player's image URL in the database
-        # mongo.db.game.update_one(
-        #     {'game_id': game_id, 'players.session_id': session_id},
-        #     {'$set': {image_url_key: image_url}}
-        # )
 
         # Find the index of the player's image_urls array that matches currentRound
         index = -1
@@ -215,7 +178,6 @@ def upload():
                         index = j
                         break
                 break
-        print (f"index is {i}")
 
         # Construct the update query based on whether index was found
         if index != -1:
@@ -233,7 +195,7 @@ def upload():
 
         # Update Pokedex
         mongo.db.pokedex.update_one(
-            {'pokemon_name': pokemon_name},
+            {'pokemon_id': pokemon_id},
             {'$push': {'image_urls': image_url}},
             upsert=True
         )
@@ -241,66 +203,32 @@ def upload():
         #fetch the game data after it is updated
         updated_game = mongo.db.game.find_one({'game_id': game_id})
 
-        # # Check if all players have uploaded their images
-        # all_uploaded = all(
-        #     currentRound in player.get('image_urls', {}) and player['image_urls'][currentRound]
-        #     for player in updated_game.get('players', [])
-        # )
-        # print(f"all uploaded: {all_uploaded}")
-
-        # # Check if all players have uploaded their images
-        # all_uploaded2 = all(
-        #     player.get('image_urls', {}).get(currentRound, '') for player in updated_game.get('players', [])
-        # )
-        # print(f"All uploaded2: {all_uploaded2}")
-
-        # # Verify the structure of image_urls for each player
-        # for player in updated_game.get('players', []):
-        #     print(f"Player {player['name']} image URLs: {player.get('image_urls', [])}")
-
-        # # Check if all players have uploaded their images
-        # all_uploaded3 = all(
-        #     currentRound < len(player.get('image_urls', [])) and player['image_urls'][currentRound]
-        #     for player in updated_game.get('players', [])
-        # )
-        # print(f"All uploaded: {all_uploaded3}")
-
         # Check if all players have uploaded their images
         all_uploaded = all(
             any(str(currentRound) in img_dict for img_dict in player.get('image_urls', []))
             for player in updated_game.get('players', [])
         )
-        print(f"all uploaded: {all_uploaded}")
-
-        # Verify the structure of image_urls for each player
-        for player in updated_game.get('players', []):
-            print(f"Player {player['name']} image URLs: {player.get('image_urls', [])}")
-
-
-        # TODO: CHECK THE ROUND, GO TO NEXT DRAWING AND UPDATE DATABASE OR GO TO REVIEW
-        # TODO: CHANGE THE WAY WE SAVE URLS IN THE PLAYERS DATABASE, ARRAY LENGTH MATCHING ROUND? BUT WE NEED LOGIC ON WHICH INDEX TO SAVE IT AS, MEANING IF THEY MISS A ROUND THEN WE NEED LOGIC AS WELL
-        # SO INSTEAD, JUST MAKE MULTIPLE ROUNDS HAVE THE PLAYERS IN IT AS A SUB DOC
 
         # check if the current round is the last round
         if all_uploaded:
             if updated_game and updated_game['round_count'] == updated_game['current_round']:
-                print (f"current round in database is: {updated_game['current_round']}")
                 mongo.db.game.update_one(
                     {'game_id': game_id},
                     {'$set': {'state': 'review'}}
                 )
                 # Notify all clients in the room to redirect to the review page
                 socketio.emit('redirect_to_review', {'game_id': game_id}, room=game_id)
+                #remove the room
+                socketio.close_room(game_id)
+                print(f"Room {game_id} has been closed.")
             else:
                 current_round = updated_game['current_round'] + 1
-                print (f"current round in database is: {updated_game['current_round']}")
-                print (f"current round in database is being updated to: {current_round}")
                 mongo.db.game.update_one(
                     {'game_id': game_id},
                     {'$set': {'current_round': current_round}}
                 )
                 # Notify all clients in the room to redirect to the next drawing page
-                socketio.emit('redirect_to_draw', {'game_id': game_id}, room=game_id)
+                socketio.emit('redirect_to_next_round', {'game_id': game_id}, room=game_id)
         else:
             print (f"waiting on other players to upload")
         return jsonify({'success': 'Image uploaded successfully!', 'imageUrl': image_url})
@@ -315,6 +243,7 @@ def review(game_id):
         return render_template('review.html', game=game)
     else:
         return "Game not found or not in review state."
+
 
 if __name__ == '__main__':
     socketio.run(app, debug=True, host='0.0.0.0', port=25565)
