@@ -13,16 +13,15 @@
 
 <body>
   {% include 'settings_modal.html' %}
-  <div id="container">
-    <div id="column-container">
-      <div class="inline-container">
-        <p data-lang-key="drawText">Draw the pokemon: </p>
-        <p id="pokemonNameDisplay"></p>
-      </div>
+  <div class="container">
+    <div class="inline-container">
+      <p data-lang-key="drawText">Draw the pokemon: </p>
+      <p id="pokemonNameDisplay"></p>
     </div>
+    <br>
     <canvas id="canvas" width="128" height="128" style="border:1px solid #000000;"
       ontouchstart="event.stopPropagation()" ontouchmove="event.stopPropagation()"></canvas>
-    <div>
+    <div class="slider-container">
       <label for="colour" data-lang-key="colour">colour:</label>
       <input type="color" id="colour" name="colour" value="#000000">
     </div>

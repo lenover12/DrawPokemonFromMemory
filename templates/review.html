@@ -14,8 +14,8 @@
   <div id="container">
     <h1 data-lang-key="review">Review</h1>
     <ul>
-      {% for round in range(1, game.round_count + 1) %}
-      <li>
+      <div class="player-grid">
+        {% for round in range(1, game.round_count + 1) %}
         <div class="inline-container">
           <p data-lang-key="round">Round </p>
           <p>{{round}}</p>
@@ -26,19 +26,22 @@
           <p id="pokemonNameDisplay{{ round }}"></p>
         </div>
         {% for player in game.players %}
-      <li>
-        <div class="inline-container">
-          <p>{{ player.name }}'s</p>
-          <p data-lang-key="drawing"> drawing</p>
+        <div class="player-grid-item">
+          <div class="profile-picture-container">
+            <img class="profile-picture-small" src="{{ player.profile_picture }}" alt="Profile Picture">
+            <div class="inline-container">
+              <p class="player-name-list">{{ player.name }}'s</p>
+              <p data-lang-key="drawing" class="player-name-list"> drawing</p>
+              {% if player.image_urls[round - 1][round|string] %}
+              <img src="{{ player.image_urls[round - 1][round|string] }}" alt="Drawing by {{ player.name }}">
+              {% else %}
+              <p>N/A</p>
+              {% endif %}
+            </div>
+          </div>
         </div>
-        {% if player.image_urls[round - 1][round|string] %}
-        <img src="{{ player.image_urls[round - 1][round|string] }}" alt="Drawing by {{ player.name }}">
-        {% else %}
-        <p>N/A</p>
-        {% endif %}
-      </li>
+      </div>
       {% endfor %}
-      </li>
       {% endfor %}
     </ul>
     <input type="hidden" id="game_id" value="{{ game.game_id }}">

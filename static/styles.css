@@ -42,7 +42,7 @@ body {
   font-family: 'Press Start 2P', cursive;
   font-size: 2vw;
   margin: 0 auto;
-  max-width: 1200px;
+  /* max-width: 1200px; */
   padding-right: 10%;
   padding-left: 10%;
 }
@@ -51,7 +51,7 @@ body {
   text-align: center;
   margin: 0 auto;
   padding: 0 20px;
-  width: 100%;
+  /* width: 100%; */
 }
 
 h1 {
@@ -407,9 +407,9 @@ input[type="radio"]:checked+label {
 
 .slider-container {
   width: 80%;
-  margin: 5vmin auto;
+  margin: 2vmin auto;
   /* Scale margin relative to viewport height */
-  text-align: center;
+  /* text-align: center; */
 }
 
 .slider {
