@@ -6,13 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Draw Pokemon From Memory</title>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-  <script src="{{ url_for('static', filename='draw.js') }}" defer></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <script src="{{ url_for('static', filename='js/draw.js') }}" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.3/socket.io.js"></script>
 </head>
 
 <body>
-  {% include 'settings_modal.html' %}
+  {% include 'modals/settings_modal.html' %}
   <div class="container">
     <div class="inline-container">
       <p data-lang-key="drawText">Draw the pokemon: </p>

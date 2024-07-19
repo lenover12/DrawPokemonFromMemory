@@ -159,9 +159,9 @@ def upload():
     game = mongo.db.game.find_one({'game_id': game_id})
 
     # Check if each player has an image URL for the specific round key
-    currentRound = game['current_round']
+    current_round = game['current_round']
 
-    pokemon_id = game['pokemon_ids'][currentRound - 1] + 1
+    pokemon_id = game['pokemon_ids'][current_round - 1] + 1
     print (f"\n\n\n\nPOKEMON ID IS:::: {pokemon_id}")
 
     try:
@@ -169,12 +169,12 @@ def upload():
         image_url = f"https://{os.getenv('DO_BUCKET')}.{os.getenv('DO_ENDPOINT')}/{pokemon_id}/{filename}"
 
 
-        # Find the index of the player's image_urls array that matches currentRound
+        # Find the index of the player's image_urls array that matches current_round
         index = -1
         for i, player in enumerate(game['players']):
             if player['session_id'] == session_id:
                 for j, img_dict in enumerate(player['image_urls']):
-                    if str(currentRound) in img_dict:
+                    if str(current_round) in img_dict:
                         index = j
                         break
                 break
@@ -184,13 +184,13 @@ def upload():
             # If index found, update the existing key-value pair
             mongo.db.game.update_one(
                 {'game_id': game_id, 'players.session_id': session_id},
-                {'$set': {f'players.$.image_urls.{index}.{currentRound}': image_url}}
+                {'$set': {f'players.$.image_urls.{index}.{current_round}': image_url}}
             )
         else:
             # If index not found, push a new key-value pair
             mongo.db.game.update_one(
                 {'game_id': game_id, 'players.session_id': session_id},
-                {'$push': {'players.$.image_urls': {str(currentRound): image_url}}}
+                {'$push': {'players.$.image_urls': {str(current_round): image_url}}}
             )
 
         # Update Pokedex
@@ -205,7 +205,7 @@ def upload():
 
         # Check if all players have uploaded their images
         all_uploaded = all(
-            any(str(currentRound) in img_dict for img_dict in player.get('image_urls', []))
+            any(str(current_round) in img_dict for img_dict in player.get('image_urls', []))
             for player in updated_game.get('players', [])
         )
 

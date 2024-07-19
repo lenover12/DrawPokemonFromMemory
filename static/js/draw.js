@@ -22,11 +22,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const game_id = document.getElementById("game_id").value;
   socket.emit("join_room", { game_id });
 
-  // // Listen for room join confirmation
-  // socket.on("joined_room", function (data) {
-  //   console.log(`Joined room: ${data.game_id}`);
-  // });
-
   // Listen for redirect event to review page
   socket.on("redirect_to_review", function (data) {
     if (data.game_id === game_id) {
@@ -211,13 +206,12 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Get pokemon_id from hidden input field
-  // const pokemonId = pokemonIdInput.value;
   const pokemonId = parseInt(pokemonIdInput.value.trim(), 10);
 
   function loadPokemonName() {
     const language = languageSelect.value;
 
-    fetch(`../static/lookup/${language}.json`)
+    fetch(`../static/localisation/pokemon_names/${language}.json`)
       .then((response) => response.json())
       .then((data) => {
         // Ensure pokemonId is within array bounds
