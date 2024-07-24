@@ -14,6 +14,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const timerDisplay = document.getElementById("timer");
   const playerName = document.getElementById("player_name");
   const roundNumber = document.getElementById("round_number");
+  const undoBtn = document.getElementById("undoBtn");
+  const redoBtn = document.getElementById("redoBtn");
 
   // Initialize Socket.IO client
   const socket = io();
@@ -96,6 +98,13 @@ document.addEventListener("DOMContentLoaded", function () {
   ctx.fillStyle = "#ffffff";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+  // History stacks for undo and redo
+  const undoStack = [];
+  const redoStack = [];
+
+  // Save the initial state
+  saveState(undoStack);
+
   canvas.addEventListener("mousedown", startPosition);
   canvas.addEventListener("mouseup", finishedPosition);
   canvas.addEventListener("mousemove", draw);
@@ -105,6 +114,8 @@ document.addEventListener("DOMContentLoaded", function () {
   colorInput.addEventListener("input", changeColor);
   saveBtn.addEventListener("click", saveCanvas);
   uploadBtn.addEventListener("click", uploadCanvas);
+  undoBtn.addEventListener("click", undo);
+  redoBtn.addEventListener("click", redo);
 
   function getEventPosition(e) {
     const rect = canvas.getBoundingClientRect();
@@ -130,6 +141,10 @@ document.addEventListener("DOMContentLoaded", function () {
   function finishedPosition() {
     painting = false;
     ctx.beginPath();
+    // Save the state of the canvas to the undo stack
+    saveState(undoStack);
+    // Clear the redo stack
+    redoStack.length = 0;
   }
 
   function draw(e) {
@@ -194,8 +209,7 @@ document.addEventListener("DOMContentLoaded", function () {
             // Disable the uploadBtn button
             uploadBtn.disabled = true;
           } else {
-            console.error("I DONT KNOW", error);
-            alert(data.error || "Failed to upload image.");
+            console.error(error || "Failed to upload image.");
           }
         })
         .catch((error) => {
@@ -239,4 +253,32 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Observe changes to the body element (or any other element you want to watch)
   resizeObserver.observe(document.body);
+
+  function saveState(stack) {
+    stack.push(canvas.toDataURL());
+  }
+
+  function restoreState(stack) {
+    const dataURL = stack.pop();
+    const img = new Image();
+    img.src = dataURL;
+    img.onload = function () {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0);
+    };
+  }
+
+  function undo() {
+    if (undoStack.length > 0) {
+      saveState(redoStack);
+      restoreState(undoStack);
+    }
+  }
+
+  function redo() {
+    if (redoStack.length > 0) {
+      saveState(undoStack);
+      restoreState(redoStack);
+    }
+  }
 });
